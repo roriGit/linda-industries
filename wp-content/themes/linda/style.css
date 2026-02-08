@@ -1,8 +1,8 @@
 /*
 Theme Name: Linda Industries
-Theme URI: https://yourwebsite.com
+Theme URI: https://
 Author: Your Name
-Author URI: https://yourwebsite.com
+Author URI: https://
 Description: A custom WordPress theme converted from HTML with Elementor support
 Version: 1.0.0
 Requires at least: 5.0
@@ -21,3 +21,110 @@ This theme, like WordPress, is licensed under the GPL.
    ====================================== */
 
 /* You can add custom theme styles here or they will be loaded from assets/css/main.css */
+
+/*--
+	-theme-btn
+----------------------------------------*/
+.theme-btn .ht_btn {
+   overflow: hidden;
+   color: white;
+   background: #e8112b;
+   font-size: 16px;
+   font-family: "Urbanist", sans-serif;
+   font-weight: 700;
+   line-height: 16px;
+   padding: 22px 33px;
+   display: inline-block;
+   text-align: center;
+   position: relative;
+   z-index: 2;
+   cursor: pointer;
+   text-decoration: none;
+   transition: all;
+   text-transform: uppercase;
+   z-index: 3;
+}
+
+.theme-btn .ht_btn img {
+   margin-top: -2px;
+   -webkit-transition: all 0.3s ease 0s;
+   -moz-transition: all 0.3s ease 0s;
+   -ms-transition: all 0.3s ease 0s;
+   -o-transition: all 0.3s ease 0s;
+   transition: all 0.3s ease 0s;
+}
+
+.theme-btn .ht_btn::before {
+   content: "";
+   background: white;
+   position: absolute;
+   z-index: -1;
+   left: 0;
+   top: 0;
+   width: 0;
+   height: 100%;
+   -webkit-transition: all 0.3s ease 0s;
+   -moz-transition: all 0.3s ease 0s;
+   -ms-transition: all 0.3s ease 0s;
+   -o-transition: all 0.3s ease 0s;
+   transition: all 0.3s ease 0s;
+}
+
+.theme-btn .ht_btn:hover {
+   color: #e8112b;
+}
+
+.theme-btn .ht_btn:hover::before {
+   width: 100%;
+}
+
+.theme-btn .ht_btn:hover img {
+   filter: invert(40%) sepia(100%) saturate(4672%) hue-rotate(342deg) brightness(78%) contrast(136%);
+}
+
+.theme-btn .ht_btn.hover-bg::before {
+   background: #181818;
+}
+
+.theme-btn .ht_btn.hover-bg:hover::before {
+   width: 100%;
+}
+
+.theme-btn .ht_btn.theme-btn .ht_btn2 {
+   background: #ffdd02;
+   color: #181818;
+}
+
+.theme-btn .ht_btn.theme-btn .ht_btn2::before {
+   background: #181818;
+}
+
+.theme-btn .ht_btn.theme-btn .ht_btn2:hover {
+   color: white;
+}
+
+.theme-btn .ht_btn.theme-btn .ht_btn2:hover img {
+   filter: invert(1);
+}
+
+.theme-btn .ht_btn.blog_btn {
+   padding: 14px 27px;
+}
+
+.theme-btn .ht_btn.blog_btn::before {
+   background: #181818;
+}
+
+.theme-btn .ht_btn.blog_btn:hover {
+   color: white;
+}
+
+.theme-btn .ht_btn.blog_btn:hover img {
+   filter: invert(0);
+}
+
+.ht-blog-btn .theme-btn .ht_btn {
+   font-size: 16px;
+   line-height: 21px;
+   padding: 10px 20px 10px 20px;
+}
