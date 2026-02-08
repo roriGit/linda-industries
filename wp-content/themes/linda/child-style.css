@@ -1,17 +1,18 @@
 /*
-Theme Name: Linda Industries
+Theme Name: Linda Industries Child
 Theme URI: https://
+Description: Child theme for Linda Industries
 Author: Your Name
 Author URI: https://
+Template: linda-industries
 Version: 1.0.0
 License: GNU General Public License v2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
-Text Domain: linda-industries
-Tags: custom-background, custom-logo, custom-menu, featured-images, threaded-comments, translation-ready
+Text Domain: linda-industries-child
 */
 
 /* ======================================
-   Theme Styles
+   Add your custom styles here
    ====================================== */
 
-/* You can add custom theme styles here or they will be loaded from assets/css/main.css */
+/* These styles will override the parent theme styles */
