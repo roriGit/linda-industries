@@ -1,299 +1,288 @@
 <?php
 /**
- * Linda Industries Theme Customizer - Enhanced for Factry
- *
+ * Linda Industries Theme Functions
+ * 
  * @package Linda_Industries
  */
 
-/**
- * Add postMessage support for site title and description for the Theme Customizer.
- *
- * @param WP_Customize_Manager $wp_customize Theme Customizer object.
- */
-function linda_industries_customize_register($wp_customize) {
-    $wp_customize->get_setting('blogname')->transport         = 'postMessage';
-    $wp_customize->get_setting('blogdescription')->transport  = 'postMessage';
-    $wp_customize->get_setting('header_textcolor')->transport = 'postMessage';
+if (!defined('ABSPATH')) {
+    exit; // Exit if accessed directly
+}
 
-    if (isset($wp_customize->selective_refresh)) {
-        $wp_customize->selective_refresh->add_partial(
-            'blogname',
-            array(
-                'selector'        => '.site-title a',
-                'render_callback' => 'linda_industries_customize_partial_blogname',
-            )
+/**
+ * Theme Setup
+ */
+function linda_industries_setup() {
+    // Add default posts and comments RSS feed links to head
+    add_theme_support('automatic-feed-links');
+    
+    // Let WordPress manage the document title
+    add_theme_support('title-tag');
+    
+    // Enable support for Post Thumbnails
+    add_theme_support('post-thumbnails');
+    
+    // Add support for custom logo
+    add_theme_support('custom-logo', array(
+        'height'      => 100,
+        'width'       => 400,
+        'flex-height' => true,
+        'flex-width'  => true,
+    ));
+    
+    // Register navigation menus
+    register_nav_menus(array(
+        'primary' => esc_html__('Primary Menu', 'linda-industries'),
+        'footer'  => esc_html__('Footer Menu', 'linda-industries'),
+    ));
+    
+    // Switch default core markup to output valid HTML5
+    add_theme_support('html5', array(
+        'search-form',
+        'comment-form',
+        'comment-list',
+        'gallery',
+        'caption',
+        'style',
+        'script',
+    ));
+    
+    // Add support for custom background
+    add_theme_support('custom-background', array(
+        'default-color' => 'ffffff',
+    ));
+    
+    // Add support for selective refresh for widgets
+    add_theme_support('customize-selective-refresh-widgets');
+    
+    // Add support for Block Styles
+    add_theme_support('wp-block-styles');
+    
+    // Add support for full and wide align images
+    add_theme_support('align-wide');
+    
+    // Add support for editor styles
+    add_theme_support('editor-styles');
+    
+    // Add support for responsive embedded content
+    add_theme_support('responsive-embeds');
+}
+add_action('after_setup_theme', 'linda_industries_setup');
+
+/**
+ * Set content width
+ */
+function linda_industries_content_width() {
+    $GLOBALS['content_width'] = apply_filters('linda_industries_content_width', 1200);
+}
+add_action('after_setup_theme', 'linda_industries_content_width', 0);
+
+/**
+ * Enqueue Google Fonts
+ */
+function linda_industries_fonts_url() {
+    $fonts_url = '';
+    $urbanist = _x('on', 'Urbanist font: on or off', 'linda-industries');
+    
+    if ('off' !== $urbanist) {
+        $font_families = array();
+        
+        if ('off' !== $urbanist) {
+            $font_families[] = 'Urbanist:wght@300;400;500;600;700;800;900';
+        }
+        
+        $query_args = array(
+            'family' => urlencode(implode('|', $font_families)),
+            'display' => urlencode('swap'),
         );
-        $wp_customize->selective_refresh->add_partial(
-            'blogdescription',
-            array(
-                'selector'        => '.site-description',
-                'render_callback' => 'linda_industries_customize_partial_blogdescription',
-            )
-        );
+        
+        $fonts_url = add_query_arg($query_args, 'https://fonts.googleapis.com/css2');
     }
     
-    // ========================================
-    // FACTRY THEME OPTIONS
-    // ========================================
-    
-    // Add Factry Options Panel
-    $wp_customize->add_panel('factry_options', array(
-        'title'       => __('Factry Theme Options', 'linda-industries'),
-        'description' => __('Customize your Factry theme settings', 'linda-industries'),
-        'priority'    => 30,
-    ));
-    
-    // ========================================
-    // HEADER SECTION
-    // ========================================
-    
-    $wp_customize->add_section('factry_header', array(
-        'title'    => __('Header Settings', 'linda-industries'),
-        'panel'    => 'factry_options',
-        'priority' => 10,
-    ));
-    
-    // Phone Number
-    $wp_customize->add_setting('factry_phone', array(
-        'default'           => '(505) 555-0125',
-        'sanitize_callback' => 'sanitize_text_field',
-        'transport'         => 'refresh',
-    ));
-    
-    $wp_customize->add_control('factry_phone', array(
-        'label'       => __('Phone Number', 'linda-industries'),
-        'description' => __('Displayed in the header contact info', 'linda-industries'),
-        'section'     => 'factry_header',
-        'type'        => 'text',
-    ));
-    
-    // Location
-    $wp_customize->add_setting('factry_location', array(
-        'default'           => 'USA, New York',
-        'sanitize_callback' => 'sanitize_text_field',
-        'transport'         => 'refresh',
-    ));
-    
-    $wp_customize->add_control('factry_location', array(
-        'label'       => __('Location', 'linda-industries'),
-        'description' => __('Displayed in the header', 'linda-industries'),
-        'section'     => 'factry_header',
-        'type'        => 'text',
-    ));
-    
-    // Working Hours
-    $wp_customize->add_setting('factry_hours', array(
-        'default'           => '10AM - 11:30PM',
-        'sanitize_callback' => 'sanitize_text_field',
-        'transport'         => 'refresh',
-    ));
-    
-    $wp_customize->add_control('factry_hours', array(
-        'label'       => __('Working Hours', 'linda-industries'),
-        'description' => __('Display business hours', 'linda-industries'),
-        'section'     => 'factry_header',
-        'type'        => 'text',
-    ));
-    
-    // ========================================
-    // SOCIAL MEDIA SECTION
-    // ========================================
-    
-    $wp_customize->add_section('factry_social', array(
-        'title'    => __('Social Media Links', 'linda-industries'),
-        'panel'    => 'factry_options',
-        'priority' => 20,
-    ));
-    
-    // Facebook
-    $wp_customize->add_setting('factry_facebook', array(
-        'default'           => '',
-        'sanitize_callback' => 'esc_url_raw',
-    ));
-    
-    $wp_customize->add_control('factry_facebook', array(
-        'label'   => __('Facebook URL', 'linda-industries'),
-        'section' => 'factry_social',
-        'type'    => 'url',
-    ));
-    
-    // Twitter
-    $wp_customize->add_setting('factry_twitter', array(
-        'default'           => '',
-        'sanitize_callback' => 'esc_url_raw',
-    ));
-    
-    $wp_customize->add_control('factry_twitter', array(
-        'label'   => __('Twitter URL', 'linda-industries'),
-        'section' => 'factry_social',
-        'type'    => 'url',
-    ));
-    
-    // LinkedIn
-    $wp_customize->add_setting('factry_linkedin', array(
-        'default'           => '',
-        'sanitize_callback' => 'esc_url_raw',
-    ));
-    
-    $wp_customize->add_control('factry_linkedin', array(
-        'label'   => __('LinkedIn URL', 'linda-industries'),
-        'section' => 'factry_social',
-        'type'    => 'url',
-    ));
-    
-    // YouTube
-    $wp_customize->add_setting('factry_youtube', array(
-        'default'           => '',
-        'sanitize_callback' => 'esc_url_raw',
-    ));
-    
-    $wp_customize->add_control('factry_youtube', array(
-        'label'   => __('YouTube URL', 'linda-industries'),
-        'section' => 'factry_social',
-        'type'    => 'url',
-    ));
-    
-    // ========================================
-    // SIDEBAR SECTION
-    // ========================================
-    
-    $wp_customize->add_section('factry_sidebar', array(
-        'title'    => __('Mobile Sidebar Settings', 'linda-industries'),
-        'panel'    => 'factry_options',
-        'priority' => 30,
-    ));
-    
-    // About Us Text
-    $wp_customize->add_setting('factry_sidebar_about', array(
-        'default'           => 'But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and will give you a complete account of the system.',
-        'sanitize_callback' => 'sanitize_textarea_field',
-    ));
-    
-    $wp_customize->add_control('factry_sidebar_about', array(
-        'label'   => __('About Us Text', 'linda-industries'),
-        'section' => 'factry_sidebar',
-        'type'    => 'textarea',
-    ));
-    
-    // Sidebar Address
-    $wp_customize->add_setting('factry_address', array(
-        'default'           => '23/A, Miranda City Likaoli Prikano, Dope',
-        'sanitize_callback' => 'sanitize_text_field',
-    ));
-    
-    $wp_customize->add_control('factry_address', array(
-        'label'   => __('Address', 'linda-industries'),
-        'section' => 'factry_sidebar',
-        'type'    => 'text',
-    ));
-    
-    // Sidebar Phone
-    $wp_customize->add_setting('factry_sidebar_phone', array(
-        'default'           => '+0989 7876 9865 9',
-        'sanitize_callback' => 'sanitize_text_field',
-    ));
-    
-    $wp_customize->add_control('factry_sidebar_phone', array(
-        'label'   => __('Contact Phone', 'linda-industries'),
-        'section' => 'factry_sidebar',
-        'type'    => 'text',
-    ));
-    
-    // Sidebar Email
-    $wp_customize->add_setting('factry_email', array(
-        'default'           => 'info@example.com',
-        'sanitize_callback' => 'sanitize_email',
-    ));
-    
-    $wp_customize->add_control('factry_email', array(
-        'label'   => __('Email Address', 'linda-industries'),
-        'section' => 'factry_sidebar',
-        'type'    => 'email',
-    ));
-    
-    // ========================================
-    // FOOTER SECTION
-    // ========================================
-    
-    $wp_customize->add_section('factry_footer', array(
-        'title'    => __('Footer Settings', 'linda-industries'),
-        'panel'    => 'factry_options',
-        'priority' => 40,
-    ));
-    
-    // Footer Email
-    $wp_customize->add_setting('factry_footer_email', array(
-        'default'           => 'factry@example.com',
-        'sanitize_callback' => 'sanitize_email',
-    ));
-    
-    $wp_customize->add_control('factry_footer_email', array(
-        'label'   => __('Footer Email', 'linda-industries'),
-        'section' => 'factry_footer',
-        'type'    => 'email',
-    ));
-    
-    // Footer Phone
-    $wp_customize->add_setting('factry_footer_phone', array(
-        'default'           => '(603) 555-0123',
-        'sanitize_callback' => 'sanitize_text_field',
-    ));
-    
-    $wp_customize->add_control('factry_footer_phone', array(
-        'label'   => __('Footer Phone', 'linda-industries'),
-        'section' => 'factry_footer',
-        'type'    => 'text',
-    ));
-    
-    // Footer Address
-    $wp_customize->add_setting('factry_footer_address', array(
-        'default'           => '4140 Parker Rd. Allentown, New Mexico 31134',
-        'sanitize_callback' => 'sanitize_textarea_field',
-    ));
-    
-    $wp_customize->add_control('factry_footer_address', array(
-        'label'   => __('Footer Address', 'linda-industries'),
-        'section' => 'factry_footer',
-        'type'    => 'textarea',
-    ));
-    
-    // Copyright Text
-    $wp_customize->add_setting('factry_copyright_text', array(
-        'default'           => 'Creative Gigs',
-        'sanitize_callback' => 'sanitize_text_field',
-    ));
-    
-    $wp_customize->add_control('factry_copyright_text', array(
-        'label'       => __('Copyright Text', 'linda-industries'),
-        'description' => __('Text before copyright year', 'linda-industries'),
-        'section'     => 'factry_footer',
-        'type'        => 'text',
-    ));
-}
-add_action('customize_register', 'linda_industries_customize_register');
-
-/**
- * Render the site title for the selective refresh partial.
- *
- * @return void
- */
-function linda_industries_customize_partial_blogname() {
-    bloginfo('name');
+    return esc_url_raw($fonts_url);
 }
 
 /**
- * Render the site tagline for the selective refresh partial.
- *
- * @return void
+ * Enqueue Scripts and Styles
  */
-function linda_industries_customize_partial_blogdescription() {
-    bloginfo('description');
+function linda_industries_scripts() {
+    // Google Fonts
+    wp_enqueue_style('linda-industries-fonts', linda_industries_fonts_url(), array(), null);
+    
+    // Theme Stylesheet
+    wp_enqueue_style('linda-industries-style', get_stylesheet_uri(), array(), wp_get_theme()->get('Version'));
+    
+    // Bootstrap CSS
+    wp_enqueue_style('bootstrap', get_template_directory_uri() . '/assets/css/bootstrap.min.css', array(), '5.3.0');
+    
+    // Bootstrap Icons
+    wp_enqueue_style('bootstrap-icons', get_template_directory_uri() . '/assets/fonts/bootstrap-icons/font-css.css', array(), '1.0');
+    
+    // Animation CSS
+    wp_enqueue_style('animate', get_template_directory_uri() . '/assets/css/animate.min.css', array(), '4.1.1');
+    
+    // Swiper CSS
+    wp_enqueue_style('swiper-bundle', get_template_directory_uri() . '/assets/css/swiper-bundle.min.css', array(), '8.0');
+    
+    // Font Awesome
+    wp_enqueue_style('font-awesome', get_template_directory_uri() . '/assets/css/all.min.css', array(), '6.0');
+    
+    // Nice Select
+    wp_enqueue_style('nice-select', get_template_directory_uri() . '/assets/css/nice-select.css', array(), '1.0');
+    
+    // Magnific Popup
+    wp_enqueue_style('magnific-popup', get_template_directory_uri() . '/assets/css/magnific-popup.css', array(), '1.1.0');
+    
+    // MetisMenu
+    wp_enqueue_style('metismenu', get_template_directory_uri() . '/assets/css/metisMenu.css', array(), '1.0');
+    
+    // AOS
+    wp_enqueue_style('aos', get_template_directory_uri() . '/assets/css/aos.css', array(), '2.3.1');
+    
+    // Spacing
+    wp_enqueue_style('spacing', get_template_directory_uri() . '/assets/css/spacing.css', array(), '1.0');
+    
+    // Main CSS
+    wp_enqueue_style('linda-industries-main', get_template_directory_uri() . '/assets/css/main.css', array(), '1.0');
+    
+    // jQuery (WordPress includes this by default)
+    wp_enqueue_script('jquery');
+    
+    // Popper
+    wp_enqueue_script('popper', get_template_directory_uri() . '/assets/js/vendor/popper.min.js', array('jquery'), '2.11.6', true);
+    
+    // Bootstrap JS
+    wp_enqueue_script('bootstrap', get_template_directory_uri() . '/assets/js/vendor/bootstrap.min.js', array('jquery', 'popper'), '5.3.0', true);
+    
+    // Mean Menu
+    wp_enqueue_script('meanmenu', get_template_directory_uri() . '/assets/js/jquery.meanmenu.js', array('jquery'), '1.0', true);
+    
+    // Swiper
+    wp_enqueue_script('swiper-bundle', get_template_directory_uri() . '/assets/js/swiper-bundle.min.js', array('jquery'), '8.0', true);
+    
+    // Easy Pie Chart
+    wp_enqueue_script('easypiechart', get_template_directory_uri() . '/assets/js/jquery.easypiechart.min.js', array('jquery'), '1.0', true);
+    
+    // Counter Up
+    wp_enqueue_script('counterup', get_template_directory_uri() . '/assets/js/jquery.counterup.min.js', array('jquery'), '1.0', true);
+    
+    // Magnific Popup
+    wp_enqueue_script('magnific-popup', get_template_directory_uri() . '/assets/js/jquery.magnific-popup.min.js', array('jquery'), '1.1.0', true);
+    
+    // MetisMenu
+    wp_enqueue_script('metismenu', get_template_directory_uri() . '/assets/js/metisMenu.min.js', array('jquery'), '1.0', true);
+    
+    // WOW JS
+    wp_enqueue_script('wow', get_template_directory_uri() . '/assets/js/wow.min.js', array('jquery'), '1.1.3', true);
+    
+    // Waypoints
+    wp_enqueue_script('waypoints', get_template_directory_uri() . '/assets/js/jquery.waypoints.min.js', array('jquery'), '4.0.1', true);
+    
+    // AOS JS
+    wp_enqueue_script('aos', get_template_directory_uri() . '/assets/js/aos.js', array('jquery'), '2.3.1', true);
+    
+    // Nice Select
+    wp_enqueue_script('nice-select', get_template_directory_uri() . '/assets/js/jquery.nice-select.min.js', array('jquery'), '1.0', true);
+    
+    // jQuery UI
+    wp_enqueue_script('jquery-ui-custom', get_template_directory_uri() . '/assets/js/jquery-ui.js', array('jquery'), '1.13.0', true);
+    
+    // Scroll Up
+    wp_enqueue_script('scrollup', get_template_directory_uri() . '/assets/js/jquery.scrollUp.min.js', array('jquery'), '2.4.1', true);
+    
+    // Plugins
+    wp_enqueue_script('linda-industries-plugins', get_template_directory_uri() . '/assets/js/plugins.js', array('jquery'), '1.0', true);
+    
+    // Main JS
+    wp_enqueue_script('linda-industries-main', get_template_directory_uri() . '/assets/js/main.js', array('jquery'), '1.0', true);
+    
+    // Comment reply script
+    if (is_singular() && comments_open() && get_option('thread_comments')) {
+        wp_enqueue_script('comment-reply');
+    }
 }
+add_action('wp_enqueue_scripts', 'linda_industries_scripts');
 
 /**
- * Binds JS handlers to make Theme Customizer preview reload changes asynchronously.
+ * Elementor Support
  */
-function linda_industries_customize_preview_js() {
-    wp_enqueue_script('linda-industries-customizer', get_template_directory_uri() . '/js/customizer.js', array('customize-preview'), '1.0', true);
+function linda_industries_register_elementor_locations($elementor_theme_manager) {
+    $elementor_theme_manager->register_all_core_location();
 }
-add_action('customize_preview_init', 'linda_industries_customize_preview_js');
+add_action('elementor/theme/register_locations', 'linda_industries_register_elementor_locations');
+
+/**
+ * Add Elementor support for custom post types
+ */
+function linda_industries_add_elementor_support() {
+    // Add Elementor support
+    add_post_type_support('page', 'elementor');
+    add_post_type_support('post', 'elementor');
+}
+add_action('init', 'linda_industries_add_elementor_support');
+
+/**
+ * Register Widget Areas
+ */
+function linda_industries_widgets_init() {
+    register_sidebar(array(
+        'name'          => esc_html__('Sidebar', 'linda-industries'),
+        'id'            => 'sidebar-1',
+        'description'   => esc_html__('Add widgets here.', 'linda-industries'),
+        'before_widget' => '<section id="%1$s" class="widget %2$s">',
+        'after_widget'  => '</section>',
+        'before_title'  => '<h2 class="widget-title">',
+        'after_title'   => '</h2>',
+    ));
+    
+    register_sidebar(array(
+        'name'          => esc_html__('Footer Widget 1', 'linda-industries'),
+        'id'            => 'footer-1',
+        'description'   => esc_html__('Add widgets here.', 'linda-industries'),
+        'before_widget' => '<div id="%1$s" class="widget %2$s">',
+        'after_widget'  => '</div>',
+        'before_title'  => '<h3 class="widget-title">',
+        'after_title'   => '</h3>',
+    ));
+    
+    register_sidebar(array(
+        'name'          => esc_html__('Footer Widget 2', 'linda-industries'),
+        'id'            => 'footer-2',
+        'description'   => esc_html__('Add widgets here.', 'linda-industries'),
+        'before_widget' => '<div id="%1$s" class="widget %2$s">',
+        'after_widget'  => '</div>',
+        'before_title'  => '<h3 class="widget-title">',
+        'after_title'   => '</h3>',
+    ));
+    
+    register_sidebar(array(
+        'name'          => esc_html__('Footer Widget 3', 'linda-industries'),
+        'id'            => 'footer-3',
+        'description'   => esc_html__('Add widgets here.', 'linda-industries'),
+        'before_widget' => '<div id="%1$s" class="widget %2$s">',
+        'after_widget'  => '</div>',
+        'before_title'  => '<h3 class="widget-title">',
+        'after_title'   => '</h3>',
+    ));
+    
+    register_sidebar(array(
+        'name'          => esc_html__('Footer Widget 4', 'linda-industries'),
+        'id'            => 'footer-4',
+        'description'   => esc_html__('Add widgets here.', 'linda-industries'),
+        'before_widget' => '<div id="%1$s" class="widget %2$s">',
+        'after_widget'  => '</div>',
+        'before_title'  => '<h3 class="widget-title">',
+        'after_title'   => '</h3>',
+    ));
+}
+add_action('widgets_init', 'linda_industries_widgets_init');
+
+/**
+ * Custom template tags for this theme
+ */
+require get_template_directory() . '/inc/template-tags.php';
+
+/**
+ * Customizer additions
+ */
+require get_template_directory() . '/inc/customizer.php';
