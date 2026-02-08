@@ -1,0 +1,67 @@
+# ------------------------------------
+# WordPress core files
+# ------------------------------------
+/wp-admin/
+/wp-includes/
+/wp-content/index.php
+/wp-content/languages/
+wp-config.php
+wp-config-sample.php
+readme.html
+license.txt
+xmlrpc.php
+
+# ------------------------------------
+# Uploads & generated content
+# ------------------------------------
+/wp-content/uploads/
+/wp-content/upgrade/
+/wp-content/cache/
+/wp-content/backups/
+/wp-content/ai1wm-backups/
+/themeforest-3qn9rkF8-factry-industry-factory-html5-template/
+
+# ------------------------------------
+# Plugins & themes (ignore ALL except your custom ones)
+# ------------------------------------
+/wp-content/plugins/*
+!/wp-content/plugins/linda-industries/
+
+/wp-content/themes/*
+!/wp-content/themes/linda-industries/
+!/wp-content/themes/linda-industries-child/
+
+# ------------------------------------
+# Logs, temp files, OS junk
+# ------------------------------------
+*.log
+*.sql
+*.tar.gz
+*.zip
+*.rar
+.DS_Store
+Thumbs.db
+
+# ------------------------------------
+# Node / build tools
+# ------------------------------------
+node_modules/
+dist/
+build/
+.cache/
+npm-debug.log*
+yarn-error.log*
+
+# ------------------------------------
+# IDE / Editor files
+# ------------------------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ------------------------------------
+# Env files
+# ------------------------------------
+.env
+.env.*
