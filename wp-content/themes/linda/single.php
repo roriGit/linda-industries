@@ -11,7 +11,7 @@ get_header();
 <main id="primary" class="site-main">
     <div class="container">
         <div class="row">
-            <div class="col-lg-8">
+            <div class="col-lg-12">
                 <?php
                 while (have_posts()) :
                     the_post();
@@ -82,7 +82,6 @@ get_header();
                 ?>
             </div><!-- .col-lg-8 -->
 
-            <?php get_sidebar(); ?>
         </div><!-- .row -->
     </div><!-- .container -->
 </main><!-- #primary -->
