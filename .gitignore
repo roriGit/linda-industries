@@ -14,7 +14,7 @@ xmlrpc.php
 # ------------------------------------
 # Uploads & generated content
 # ------------------------------------
-/wp-content/uploads/
+/wp-content/uploads/*
 /wp-content/upgrade/
 /wp-content/cache/
 /wp-content/backups/
@@ -24,12 +24,6 @@ xmlrpc.php
 # ------------------------------------
 # Plugins & themes (ignore ALL except your custom ones)
 # ------------------------------------
-/wp-content/plugins/*
-!/wp-content/plugins/linda-industries/
-
-/wp-content/themes/*
-!/wp-content/themes/linda-industries/
-!/wp-content/themes/linda-industries-child/
 
 # ------------------------------------
 # Logs, temp files, OS junk
